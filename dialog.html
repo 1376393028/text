@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/dialog.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Dialog</h2>
+        <button class="button open-dialog">打开弹窗</button>
+        <div class="dialog">
+            <div class="main">
+                <div class="header">提示 <button class="close"></button></div>
+                <div class="content">
+                    <p>这是一段消息</p>
+                </div>
+                <div class="footer">
+                    <button class="button btn-cancel">取消</button>
+                    <button class="button primary btn-ok">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    class Dislog {
+        constructor($root, option = {}) {
+            this.$root = $root
+            this.option = option
+            this.onCancel = this.option.onCancel || function() {}
+            this.onOk = this.option.onOk || function() {}
+            this.bind()
+        }
+        bind() {
+            let self = this
+            this.$root.querySelector('.btn-cancel').onclick = function() {
+                self.hid()
+                self.onCancel()
+            }
+            this.$root.querySelector('.close').onclick = function() {
+                self.hid()
+                self.onCancel()
+            }
+            this.$root.querySelector('.btn-ok').onclick = function() {
+                self.hid()
+                self.onOk()
+            }
+        }
+        hid() {
+            this.$root.querySelector('.dialog').classList.remove('appear')
+            setTimeout(() => this.$root.querySelector('.dialog').classList.remove('show'), 400)
+        }
+        show() {
+            this.$root.querySelector('.dialog').classList.add('show')
+            setTimeout(() => this.$root.querySelector('.dialog').classList.add('appear'))
+        }
+    }
+    let root = document.querySelector('.container')
+    let dialog = new Dislog(root, {
+        onOk() {
+            console.log('用户点了ok')
+        },
+        onCancel() {
+            console.log('用户点了取消')
+        }
+    })
+    document.querySelector('.open-dialog').onclick = function() {
+        dialog.show()
+    }
+</script>
+
+</html>
