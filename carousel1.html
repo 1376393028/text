@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/carousel.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Carousel</h2>
+        <select name="" id="carousel">
+            <option value="slide">平移</option>
+            <option value="fade">渐变</option>
+            <option value="zoom">缩放</option>
+        </select>
+        <div class="carousel">
+            <div class="panels">
+                <a href="#1" class="active">1</a>
+                <a href="#2">2</a>
+                <a href="#3">3</a>
+                <a href="#4">4</a>
+            </div>
+            <div class="arrows">
+                <button class="arrow arrow-pre"></button>
+                <button class="arrow arrow-next"></button>
+            </div>
+            <ul class="indicators">
+                <li class="active"></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script>
+    const css = ($node, cssObj) => Object.assign($node.style, cssObj)
+    const Animation = {
+        slide($from, $to, direction) {
+            $from.style = ''
+            $to.style = ''
+            css($from, {
+                transform: `translateX(0)`,
+                zIndex: 3
+            })
+
+            css($to, {
+                transform: `translateX(${direction === 'right'? '-' : ''}100%)`,
+                zIndex: 3
+            })
+
+            setTimeout(() => {
+                css($from, {
+                    transform: `translateX(${direction === 'left'? '-' : ''}100%)`,
+                    transition: `all .4s`
+                })
+                css($to, {
+                    transform: `translateX(0)`,
+                    transition: `all .4s`
+                })
+            })
+        },
+        fade($from, $to) {
+            $from.style = ''
+            $to.style = ''
+            css($from, {
+                opacity: 1,
+                zIndex: 3
+            })
+
+            css($to, {
+                opacity: 0,
+                zIndex: 2
+            })
+
+            setTimeout(() => {
+                css($from, {
+                    opacity: 0,
+                    zIndex: 2,
+                    transition: `all .4s`
+                })
+                css($to, {
+                    opacity: 1,
+                    zIndex: 3,
+                    transition: `all .4s`
+                })
+            })
+        },
+        zoom($from, $to) {
+            $from.style = ''
+            $to.style = ''
+            css($from, {
+                transform: `scale(1)`,
+                opacity: 1,
+                zIndex: 3
+            })
+
+            css($to, {
+                transform: `scale(10)`,
+                opacity: 0,
+                zIndex: 2
+            })
+
+            setTimeout(() => {
+                css($from, {
+                    transform: `scale(10)`,
+                    opacity: 0,
+                    zIndex: 2,
+                    transition: `all .4s`
+                })
+                css($to, {
+                    transform: `scale(1)`,
+                    opacity: 1,
+                    zIndex: 3,
+                    transition: `all .4s`
+                })
+            })
+        }
+    }
+    class Carousel {
+        constructor($root, Animation) {
+            this.$root = $root
+            this.$pre = $root.querySelector('.arrow-pre')
+            this.$next = $root.querySelector('.arrow-next')
+            this.$$indicators = $root.querySelectorAll('.indicators>li')
+            this.$$panels = $root.querySelectorAll('.panels>a')
+            this.Animation = Animation
+            this.bind()
+        }
+        bind() {
+            this.$pre.onclick = this.$preOnclick.bind(this)
+            this.$next.onclick = this.$nextOnclick.bind(this)
+            this.$$indicators.forEach($indicator => $indicator.onclick = this.$indicatorsOnclick.bind(this))
+        }
+        getIndex() {
+            return [...this.$$indicators].indexOf(this.$root.querySelector('.indicators .active'))
+        }
+        getPreIndex() {
+            return (this.getIndex() - 1 + this.$$indicators.length) % this.$$indicators.length
+        }
+        getNextIndex() {
+            return (this.getIndex() + 1) % this.$$indicators.length
+        }
+        setPage($from, $to, direction) {
+
+            this.Animation(this.$$panels[$from], this.$$panels[$to], direction)
+        }
+        setIndicator($to) {
+            this.$$indicators.forEach($indicator => $indicator.classList.remove('active'))
+            this.$$indicators[$to].classList.add('active')
+        }
+        $preOnclick() {
+            let $to = this.getPreIndex()
+            let $from = this.getIndex()
+            this.setPage($from, $to, 'right')
+            this.setIndicator($to)
+        }
+        $nextOnclick() {
+            let $to = this.getNextIndex()
+            let $from = this.getIndex()
+            this.setPage($from, $to, 'left')
+            this.setIndicator($to)
+        }
+        $indicatorsOnclick(e) {
+            let $from = this.getIndex()
+            let $to = [...this.$$indicators].indexOf(e.target)
+            let direction = $from > $to ? 'right' : 'left'
+            this.setPage($from, $to, direction)
+            this.setIndicator($to)
+        }
+        setAnimation(Animation) {
+            this.Animation = Animation
+        }
+    }
+    let $root = document.querySelector('.carousel')
+    let carousel = new Carousel($root, Animation.slide)
+    document.querySelector('#carousel').onchange = function() {
+        carousel.setAnimation(Animation[this.value])
+    }
+</script>
+
+</html>

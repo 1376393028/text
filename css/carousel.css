@@ -10,6 +10,7 @@
 .carousel {
     position: relative;
     height: 200px;
+    overflow: hidden;
 }
 
 .carousel .panels>a {
@@ -20,13 +21,9 @@
     width: 100%;
     height: 100%;
     text-decoration: none;
-    opacity: 0;
-    z-index: 0;
-    transition: all .5s;
 }
 
 .carousel .panels>a.active {
-    opacity: 1;
     z-index: 1;
 }
 
