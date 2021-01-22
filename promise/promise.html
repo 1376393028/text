@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    class Promise2 {
+
+    }
+
+    const getWeather = city => new Promise((resole, reject) => {
+        let xhr = new XMLHttpRequest()
+        xhr.open('GET', 'http://rap2api.taobao.org/app/mock/275633/getWeather?city=' + city, true)
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resole(JSON.parse(xhr.responseText))
+            } else {
+                reject(`获取${city}天气失败`)
+            }
+        }
+        xhr.send()
+    })
+
+    getWeather('北京')
+        .then(data => {
+            console.log(data)
+        }, err => {
+            console.log(err)
+        })
+</script>
+
+</html>
